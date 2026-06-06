@@ -1,9 +1,13 @@
 services:
   - type: web
-    name: panifica-frontend
-    env: static
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    name: panifica-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT
+    preDeployCommand: flask setup_producao
     envVars:
-      - key: NODE_VERSION
-        value: 20.11.0
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: "3.11.9"
