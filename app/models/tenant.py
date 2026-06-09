@@ -23,6 +23,7 @@ class Tenant(ModeloBase):
     itens_estoque = db.relationship("ItemEstoque",   back_populates="tenant", lazy="dynamic")
     lojas         = db.relationship("Loja",            back_populates="tenant", lazy="dynamic")
     compras       = db.relationship("Compra",         back_populates="tenant", lazy="dynamic")
+    produtos      = db.relationship("Produto",        back_populates="tenant", lazy="dynamic")
     producoes     = db.relationship("ProducaoDiaria", back_populates="tenant", lazy="dynamic")
 
     def __repr__(self):

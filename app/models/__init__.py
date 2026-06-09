@@ -8,9 +8,10 @@ from app.models.audit_log import AuditLog
 from app.models.estoque import ItemEstoque, MovimentacaoEstoque
 from app.models.compra import Compra, CompraItem
 from app.models.producao import ProducaoDiaria
+from app.models.produto import Produto
 
 __all__ = [
     "Tenant", "Usuario", "Fornecedor", "Loja", "ContaPagar",
     "Faturamento", "AuditLog", "ItemEstoque", "MovimentacaoEstoque",
-    "Compra", "CompraItem", "ProducaoDiaria",
+    "Compra", "CompraItem", "ProducaoDiaria", "Produto",
 ]
