@@ -19,11 +19,22 @@ class Config:
     PROPAGATE_EXCEPTIONS = True
 
     # Banco de dados
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///panifica_dev.db")
+    _db_url = os.environ.get("DATABASE_URL", "sqlite:///panifica_dev.db")
+    # Supabase requer postgresql+psycopg2:// e não postgresql://
+    if _db_url and _db_url.startswith("postgresql://"):
+        _db_url = _db_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+    SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
-        "pool_recycle": 300,
+        "pool_recycle": 120,
+        "pool_size": 2,
+        "max_overflow": 3,
+        "pool_timeout": 30,
+        "connect_args": {
+            "sslmode": "require",
+            "connect_timeout": 10,
+        } if os.environ.get("DATABASE_URL", "").startswith("postgresql") else {},
     }
 
     # JWT — chaves com mínimo de 32 bytes conforme RFC 7518
