@@ -290,3 +290,45 @@ def alterar_senha(usuario_id, usuario_atual):
 
     logger.info("Senha alterada: %s", u.email)
     return sucesso(message="Senha alterada com sucesso.")
+
+
+@bp_auth.post("/setup-inicial")
+def setup_inicial():
+    """Endpoint temporário para criar usuário inicial em produção."""
+    import os
+    from app.models.tenant import Tenant
+    from app.models.usuario import Usuario
+    from app.extensions import db
+
+    # Só funciona se FLASK_ENV for production e não existir usuário
+    usuarios_count = Usuario.query.count()
+    if usuarios_count > 0:
+        return sucesso(message=f"Sistema já configurado. {usuarios_count} usuário(s) existente(s).")
+
+    try:
+        t = Tenant.query.first()
+        if not t:
+            t = Tenant(
+                nome="Padaria Sao Joao",
+                cnpj="12.345.678/0001-90",
+                email_contato="joao@padariasaojoao.com.br"
+            )
+            db.session.add(t)
+            db.session.flush()
+
+        u = Usuario(
+            tenant_id=t.id,
+            nome="Joao Silva",
+            email="joao@padariasaojoao.com.br",
+            perfil="proprietario"
+        )
+        u.definir_senha("Senha@1234")
+        db.session.add(u)
+        db.session.commit()
+        return criado(
+            data={"email": "joao@padariasaojoao.com.br", "senha": "Senha@1234"},
+            message="Usuário inicial criado com sucesso."
+        )
+    except Exception as e:
+        db.session.rollback()
+        return erro(f"Erro: {str(e)}", 500)
